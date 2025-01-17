@@ -1,0 +1,142 @@
+Table Account {
+    AccountID uuid [pk]
+    Email string [unique, not null]
+    PasswordHash hash [not null]
+    IsEmailVerified boolean [default: false]
+    CreatedAt timestamp
+    UpdatedAt timestamp
+}
+
+Table AuthProvider {
+    AuthProviderID uuid [pk]
+    Account uuid [ref: - Account.AccountID]
+    ProviderType enum('Google', 'GitHub') [not null]
+    ProviderID string [not null]
+    CreatedAt timestamp
+    UpdatedAt timestamp
+}
+
+Table Profile {
+    ProfileID uuid [pk]
+    Account uuid [ref: - Account.AccountID]
+    FirstName string [not null]
+    LastName string [not null]
+    PhoneNumber string
+    Gender enum('Male', 'Female', 'Other')
+    BirthDate datetime
+    ProfileImageURL url [not null]
+    CreatedAt timestamp
+    UpdatedAt timestamp
+}
+
+Table VerificationCode {
+    CodeID uuid [pk]
+    Account uuid [ref: - Account.AccountID]
+    Code text [not null]
+    ExpiryDate timestamp [not null]
+    Verified boolean [default: false]
+    CreatedAt timestamp 
+}
+
+Table PasswordResetToken {
+    TokenID uuid [pk]
+    Account uuid [ref: > Account.AccountID]
+    Token text [not null, unique]
+    ExpiryDate timestamp [not null]
+    Used boolean [default: false]
+    CreatedAt timestamp
+}
+
+Table Address {
+    AddressID uuid [pk]
+    Account uuid [ref: > Account.AccountID]
+    AddressLine1 text [not null]
+    AddressLine2 text
+    City string [not null]
+    State string [not null]
+    Country string [not null]
+    PostalCode string [not null]
+    IsDefault boolean [default: false]
+    CreatedAt timestamp 
+    UpdatedAt timestamp
+}
+
+Table Product {
+    ProductID uuid [pk]
+    Name string [not null]
+    Description text [not null]
+    Brand uuid [ref: <> Brand.BrandID]
+    Price number [not null]
+    DiscountPercentage number [default: 0]
+    StockQuantity number [not null]
+    ImagesURL url[] [not null]
+    IsFeatured boolean [default: false]
+    Rating enum(0, 5) [default: 0]
+    CreatedAt timestamp 
+    UpdatedAt timestamp 
+}
+
+Table Brand {
+    BrandID uuid [pk]
+    Name string [not null]
+    Description text
+    CreatedAt timestamp 
+    UpdatedAt timestamp 
+}
+
+Table Order {
+    OrderID uuid [pk]
+    Account uuid [ref: - Account.AccountID]
+    Status enum('Pending', 'Shipped', 'Delivered', 'Canceled', 'Returned') [default: 'Pending']
+    TotalAmount number [not null]
+    AddressID uuid [ref: - Address.AddressID]
+    PaymentMethodID uuid [ref: > PaymentMethod.PaymentMethodID]
+    TrackingNumber string [not null]
+    EstimatedDeliveryDate timestamp [not null]
+    ActualDeliveryDate timestamp
+    CreatedAt timestamp 
+    UpdatedAt timestamp
+}
+
+Table OrderItem {
+    OrderItemID uuid [pk]
+    OrderID uuid [ref: > Order.OrderID]
+    ProductID uuid [ref: > Product.ProductID]
+    Quantity number [not null]
+    UnitPrice number [not null]
+    Discount number [default: 0]
+    TotalPrice number [not null]
+}
+
+Table Review {
+    ReviewID uuid [pk]
+    Account uuid [ref: > Account.AccountID]
+    ProductID uuid [ref: > Product.ProductID]
+    Rating enum(0, 5) [default: 0]
+    Comment text [not null]
+    ReviewDate datetime [not null]
+    IsVerifiedPurchase boolean [default: false]
+    CreatedAt timestamp 
+    UpdatedAt timestamp 
+}
+
+Table PaymentMethod {
+    PaymentMethodID uuid [pk]
+    Account uuid [ref: > Account.AccountID]
+    CardHolderName string [not null]
+    CardNumber string [not null]
+    CardType enum('Visa', 'MasterCard') [not null]
+    ExpirationDate date [not null]
+    CVV string [not null]
+    BillingAddress text [not null]
+    IsDefault boolean [default: false]
+    CreatedAt timestamp 
+    UpdatedAt timestamp
+}
+
+Table Wishlist {
+    WishlistID uuid [pk]
+    Account uuid [ref: > Account.AccountID]
+    ProductID uuid [ref: > Product.ProductID]
+    CreatedAt timestamp 
+}
