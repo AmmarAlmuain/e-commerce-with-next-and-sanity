@@ -1,4 +1,5 @@
-import { NextApiResponse } from "next";
+import { NextResponse } from "next/server";
+import { CredentialsSignin } from "next-auth";
 
 class AppError extends Error {
   statusCode: number;
@@ -29,13 +30,19 @@ class UnauthorizedError extends AppError {
   }
 }
 
+class ConflictError extends AppError {
+  constructor(message = "Conflict occurred") {
+    super(message, 409);
+  }
+}
+
 class InternalServerError extends AppError {
   constructor(message = "Internal server error") {
     super(message, 500);
   }
 }
 
-function errorHandler(err: AppError, res: NextApiResponse) {
+function errorHandler(err: AppError) {
   const statusCode = err.statusCode || 500;
   const message = err.isOperational ? err.message : "Something went wrong";
 
@@ -43,13 +50,21 @@ function errorHandler(err: AppError, res: NextApiResponse) {
     console.error("ERROR:", err);
   }
 
-  res.status(statusCode).json({
-    success: false,
-    error: {
-      message,
-      statusCode,
+  return NextResponse.json(
+    {
+      success: false,
+      error: {
+        message,
+        statusCode,
+      },
     },
-  });
+    { status: statusCode }
+  );
+}
+
+class InvalidCredentials extends CredentialsSignin {
+  code =
+    "Oops! Looks like your credentials are incorrect. Please double-check them and try again";
 }
 
 export {
@@ -59,4 +74,6 @@ export {
   UnauthorizedError,
   InternalServerError,
   errorHandler,
+  ConflictError,
+  InvalidCredentials,
 };

@@ -10,7 +10,7 @@ const account: SchemaTypeDefinition = {
       name: "email",
       title: "Email",
       type: "string",
-      validation: (rule) => rule.required().min(3).max(256).email().lowercase(),
+      validation: (rule) => rule.required().min(6).max(256).email().lowercase(),
     },
     {
       name: "password_hash",
@@ -23,7 +23,6 @@ const account: SchemaTypeDefinition = {
       title: "Is_Email_Verified",
       type: "boolean",
       initialValue: false,
-      validation: (rule) => rule.required(),
     },
   ],
 };
@@ -105,14 +104,13 @@ const profile: SchemaTypeDefinition = {
       title: "Profile_Image_Url",
       type: "string",
       initialValue: "/profile/default-image.png",
-      validation: (rule) => rule.required(),
     },
   ],
 };
 
-const verification_code: SchemaTypeDefinition = {
-  name: "verification_code",
-  title: "Verification_Code",
+const verification_token: SchemaTypeDefinition = {
+  name: "email_verification_token",
+  title: "Email_Verification_Token",
   type: "document",
   fields: [
     {
@@ -129,17 +127,10 @@ const verification_code: SchemaTypeDefinition = {
       validation: (rule) => rule.required(),
     },
     {
-      name: "expiry_date",
-      title: "Expiry_Date",
-      type: "datetime",
-      validation: (rule) => rule.required(),
-    },
-    {
       name: "is_used",
       title: "Is_Used",
       type: "boolean",
       initialValue: false,
-      validation: (rule) => rule.required(),
     },
   ],
 };
@@ -163,17 +154,10 @@ const password_reset_token: SchemaTypeDefinition = {
       validation: (rule) => rule.required(),
     },
     {
-      name: "expiry_date",
-      title: "Expiry_Date",
-      type: "datetime",
-      validation: (rule) => rule.required(),
-    },
-    {
       name: "is_used",
       title: "Is_Used",
       type: "boolean",
       initialValue: false,
-      validation: (rule) => rule.required(),
     },
   ],
 };
@@ -183,7 +167,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     account,
     auth_provider,
     profile,
-    verification_code,
+    verification_token,
     password_reset_token,
   ],
 };
