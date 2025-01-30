@@ -64,6 +64,7 @@ Table Address {
 Table Product {
     ProductID uuid [pk]
     Name string [not null]
+    slug slug [not null]
     Description text [not null]
     Brand uuid [ref: <> Brand.BrandID]
     Price number [not null]
